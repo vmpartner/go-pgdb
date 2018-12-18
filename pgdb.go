@@ -2,8 +2,11 @@ package pgdb
 
 import (
 	"fmt"
+	"github.com/astaxie/beego/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -13,6 +16,7 @@ var Host string
 var Port string
 var Name string
 var Ping int
+var ConfigPath string
 var Debug bool
 
 var DB *gorm.DB
@@ -42,7 +46,10 @@ func New() *gorm.DB {
 }
 
 func Close() {
-	DB.Close()
+	err := DB.Close()
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func Connect() {
@@ -58,6 +65,26 @@ func Connect() {
 }
 
 func GetLInk() string {
+
+	if ConfigPath != "" {
+		for k := 0; k < 5; k ++ {
+			path := strings.Repeat("../", k) + ConfigPath
+			if _, err := os.Stat(path); !os.IsNotExist(err) {
+				ConfigPath = path
+				break
+			}
+		}
+		cfg, err := config.NewConfig("ini", ConfigPath)
+		if err != nil {
+			panic(err.Error())
+		}
+		User = cfg.String("SqlUser")
+		Pass = cfg.String("SqlPass")
+		Host = cfg.String("SqlHost")
+		Port = cfg.String("SqlPort")
+		Name = cfg.String("SqlName")
+	}
+
 	dbLink := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", User, Pass, Host, Port, Name)
 
 	return dbLink
