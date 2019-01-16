@@ -1,12 +1,9 @@
-package pgdb
+package mqdb
 
 import (
 	"fmt"
-	"github.com/astaxie/beego/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"os"
-	"strings"
 	"time"
 )
 
@@ -15,76 +12,67 @@ var Pass string
 var Host string
 var Port string
 var Name string
-var Ping int
-var ConfigPath string
+
 var Debug bool
+var PingEachMinute int
+var MaxIdleConns int
+var MaxOpenConns int
 
 var DB *gorm.DB
 var lastPing time.Time
+var err error
 
-func New() *gorm.DB {
-
-	if Ping <= 0 {
-		Ping = 1
-	}
-
+func New() (*gorm.DB, error) {
 	if DB == nil {
-		Connect()
+		DB, err = Connect()
+		if err != nil {
+			return DB, err
+		}
 		return New()
 	}
-	if time.Now().After(lastPing.Add(time.Duration(Ping) * time.Minute)) {
+	if PingEachMinute > 0 && time.Now().After(lastPing.Add(time.Duration(PingEachMinute)*time.Minute)) {
 		lastPing = time.Now()
 		err := DB.DB().Ping()
 		if err != nil {
-			DB.Close()
-			Connect()
+			err = DB.Close()
+			if err != nil {
+				return DB, err
+			}
+			DB, err = Connect()
+			if err != nil {
+				return DB, err
+			}
 			return New()
 		}
 	}
 
-	return DB
+	return DB, nil
 }
 
-func Close() {
-	err := DB.Close()
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func Connect() {
+func Connect() (*gorm.DB, error) {
 	dbLink := GetLInk()
 	var err error
 	DB, err = gorm.Open("postgres", dbLink)
 	DB.LogMode(Debug)
 	if err != nil {
-		panic(err.Error())
+		return DB, err
 	}
-	DB.DB().SetMaxIdleConns(100)
-	DB.DB().SetMaxOpenConns(1000)
+	DB.DB().SetMaxIdleConns(MaxIdleConns)
+	DB.DB().SetMaxOpenConns(MaxOpenConns)
+
+	return DB, nil
+}
+
+func Close() error {
+	err = DB.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func GetLInk() string {
-
-	if ConfigPath != "" {
-		for k := 0; k < 5; k ++ {
-			path := strings.Repeat("../", k) + ConfigPath
-			if _, err := os.Stat(path); !os.IsNotExist(err) {
-				ConfigPath = path
-				break
-			}
-		}
-		cfg, err := config.NewConfig("ini", ConfigPath)
-		if err != nil {
-			panic(err.Error())
-		}
-		User = cfg.String("SqlUser")
-		Pass = cfg.String("SqlPass")
-		Host = cfg.String("SqlHost")
-		Port = cfg.String("SqlPort")
-		Name = cfg.String("SqlName")
-	}
-
 	dbLink := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", User, Pass, Host, Port, Name)
 
 	return dbLink
