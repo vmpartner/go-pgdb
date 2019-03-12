@@ -1,4 +1,4 @@
-module github.com/vmpartner/go-pgdb/v2
+module github.com/vmpartner/go-pgdb/v3
 
 require (
 	github.com/astaxie/beego v1.11.1 // indirect
