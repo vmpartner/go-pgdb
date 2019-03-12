@@ -18,17 +18,12 @@ var PingEachMinute int
 var MaxIdleConns int
 var MaxOpenConns int
 
-var DB *gorm.DB
 var lastPing time.Time
-var err error
 
 func New() (*gorm.DB, error) {
-	if DB == nil {
-		DB, err = Connect()
-		if err != nil {
-			return DB, err
-		}
-		return New()
+	DB, err := Connect()
+	if err != nil {
+		return DB, err
 	}
 	if PingEachMinute > 0 && time.Now().After(lastPing.Add(time.Duration(PingEachMinute)*time.Minute)) {
 		lastPing = time.Now()
@@ -52,7 +47,7 @@ func New() (*gorm.DB, error) {
 func Connect() (*gorm.DB, error) {
 	dbLink := GetLInk()
 	var err error
-	DB, err = gorm.Open("postgres", dbLink)
+	DB, err := gorm.Open("postgres", dbLink)
 	DB.LogMode(Debug)
 	if err != nil {
 		return DB, err
@@ -61,15 +56,6 @@ func Connect() (*gorm.DB, error) {
 	DB.DB().SetMaxOpenConns(MaxOpenConns)
 
 	return DB, nil
-}
-
-func Close() error {
-	err = DB.Close()
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func GetLInk() string {
