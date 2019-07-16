@@ -1,4 +1,4 @@
-package mqdb
+package pgdb
 
 import (
 	"fmt"
