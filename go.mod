@@ -1,4 +1,4 @@
-module github.com/vmpartner/go-pgdb/v4
+module github.com/vmpartner/go-pgdb/v5
 
 require (
 	github.com/denisenkom/go-mssqldb v0.0.0-20190715232110-2b613d287457 // indirect
