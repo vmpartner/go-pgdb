@@ -22,6 +22,7 @@ var lastPing time.Time
 
 var DB *gorm.DB
 
+// Get instance
 func New() (*gorm.DB, error) {
 	if DB == nil {
 		Connect()
@@ -40,6 +41,7 @@ func New() (*gorm.DB, error) {
 	return DB, nil
 }
 
+// Connect to DB
 func Connect() {
 	dbLink := GetLInk()
 	var err error
@@ -52,6 +54,7 @@ func Connect() {
 	DB.DB().SetMaxOpenConns(MaxOpenConns)
 }
 
+// Format link
 func GetLInk() string {
 	dbLink := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", User, Pass, Host, Port, Name)
 
