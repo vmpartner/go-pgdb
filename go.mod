@@ -1,4 +1,4 @@
-module github.com/vmpartner/go-pgdb/v5
+module github.com/vmpartner/go-pgdb/v6
 
 go 1.12
 
