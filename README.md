@@ -11,7 +11,7 @@ Features:
 
 ```golang
 
-import "github.com/vmpartner/go-pgdb/v5"
+import "github.com/vmpartner/go-pgdb/v6"
 
 config := LoadConfig()
 pgdb.User = config.Key("user").String()
