@@ -1,6 +1,6 @@
 module github.com/vmpartner/go-pgdb/v6
 
-go 1.12
+go 1.14
 
 require (
 	github.com/jinzhu/gorm v1.9.10
