@@ -8,20 +8,20 @@ import (
 )
 
 type Config struct {
-	host            string
-	port            int
-	name            string
-	user            string
-	pass            string
-	sslMode         string
-	timeZone        string
-	maxIdleConns    int
-	maxOpenConns    int
-	connMaxLifetime time.Duration
+	Host            string
+	Port            int
+	Name            string
+	User            string
+	Pass            string
+	SslMode         string
+	TimeZone        string
+	MaxIdleConns    int
+	MaxOpenConns    int
+	ConnMaxLifetime time.Duration
 }
 
 func New(c Config) (db *gorm.DB, err error) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", c.user, c.pass, c.name, c.port, c.sslMode, c.timeZone)
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", c.User, c.Pass, c.Name, c.Port, c.SslMode, c.TimeZone)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return
@@ -30,9 +30,9 @@ func New(c Config) (db *gorm.DB, err error) {
 	if err != nil {
 		return
 	}
-	tx.SetMaxIdleConns(c.maxIdleConns)
-	tx.SetMaxOpenConns(c.maxOpenConns)
-	tx.SetConnMaxLifetime(c.connMaxLifetime)
+	tx.SetMaxIdleConns(c.MaxIdleConns)
+	tx.SetMaxOpenConns(c.MaxOpenConns)
+	tx.SetConnMaxLifetime(c.ConnMaxLifetime)
 
 	return
 }
