@@ -1,8 +1,8 @@
-module github.com/vmpartner/go-pgdb/v6
+module github.com/vmpartner/go-pgdb/v7
 
-go 1.14
+go 1.16
 
 require (
-	github.com/jinzhu/gorm v1.9.10
-	github.com/lib/pq v1.2.0
+	gorm.io/driver/postgres v1.0.8
+	gorm.io/gorm v1.20.12
 )
