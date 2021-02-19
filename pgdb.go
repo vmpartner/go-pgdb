@@ -21,7 +21,7 @@ type Config struct {
 }
 
 func New(c Config) (db *gorm.DB, err error) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", c.User, c.Pass, c.Name, c.Port, c.SslMode, c.TimeZone)
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=%s TimeZone=%s", c.User, c.Pass, c.Name, c.Host, c.Port, c.SslMode, c.TimeZone)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return
